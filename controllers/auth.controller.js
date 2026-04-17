@@ -9,26 +9,32 @@ const signToken = (id) => {
   });
 };
 
-// controllers/auth.controller.js  (Only replace the register function + keep the rest)
-
-// Replace only this register function in auth.controller.js
+// Register user
 const register = async (req, res, next) => {
   try {
     const { name, email, password } = req.body;
 
+    if (!name || !email || !password) {
+      return next(new AppError('Name, email and password are required', 400));
+    }
+
+    // Check if user exists
     const existingUser = await User.findOne({ email });
     if (existingUser) {
       return next(new AppError('User already exists with this email', 400));
     }
 
+    // Create user
     const newUser = await User.create({ 
       name, 
       email, 
       password 
     });
 
+    // Generate token
     const token = signToken(newUser._id);
 
+    // Send clean response
     res.status(201).json({
       success: true,
       token,
@@ -39,6 +45,7 @@ const register = async (req, res, next) => {
       }
     });
   } catch (error) {
+    console.error("Register error:", error.message);   // Log for debugging
     next(error);
   }
 };
@@ -69,6 +76,7 @@ const login = async (req, res, next) => {
       }
     });
   } catch (error) {
+    console.error("Login error:", error.message);
     next(error);
   }
 };
