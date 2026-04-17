@@ -1,6 +1,10 @@
 // config/swagger.js
 const swaggerJsdoc = require('swagger-jsdoc');
 
+const serverUrl = process.env.NODE_ENV === 'production' 
+  ? `https://${process.env.RENDER_EXTERNAL_HOSTNAME || 'todo-api-90o2m.onrender.com'}`
+  : `http://localhost:${process.env.PORT || 5000}`;
+
 const options = {
   definition: {
     openapi: '3.0.0',
@@ -11,8 +15,8 @@ const options = {
     },
     servers: [
       {
-        url: `http://localhost:${process.env.PORT || 5000}`,
-        description: 'Development server',
+        url: serverUrl,
+        description: process.env.NODE_ENV === 'production' ? 'Production server' : 'Development server',
       },
     ],
     components: {
@@ -21,25 +25,12 @@ const options = {
           type: 'http',
           scheme: 'bearer',
           bearerFormat: 'JWT',
-          description: 'Enter your JWT token in the format: Bearer <token>'
-        }
-      },
-      schemas: {
-        Todo: {
-          type: 'object',
-          properties: {
-            _id: { type: 'string' },
-            title: { type: 'string' },
-            completed: { type: 'boolean' },
-            createdAt: { type: 'string', format: 'date-time' },
-            updatedAt: { type: 'string', format: 'date-time' }
-          }
+          description: 'Enter your JWT token (Bearer <token>)'
         }
       }
-    },
-    security: [{ BearerAuth: [] }]   // Apply globally
+    }
   },
-  apis: ['./routes/*.js'],   // Scan all route files for comments
+  apis: ['./routes/*.js'],
 };
 
 const specs = swaggerJsdoc(options);
