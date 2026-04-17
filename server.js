@@ -4,7 +4,6 @@ const dotenv = require('dotenv');
 const cors = require('cors');
 const morgan = require('morgan');
 const helmet = require('helmet');
-const rateLimit = require('express-rate-limit');
 
 dotenv.config();
 
@@ -14,10 +13,9 @@ const connectDB = require('./config/db');
 // ====================== MIDDLEWARE ======================
 app.use(helmet());
 
-
-// Replace your current cors block with this:
+// CORS - permissive for deployment
 app.use(cors({
-  origin: true,   // This allows all origins (including Render + Swagger)
+  origin: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true
@@ -25,15 +23,6 @@ app.use(cors({
 
 app.use(express.json({ limit: '10kb' }));
 app.use(express.urlencoded({ extended: true, limit: '10kb' }));
-
-// Rate Limiting
-const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000,
-  max: 100,
-  message: { success: false, message: 'Too many requests from this IP, please try again later.' }
-});
-app.use('/api', limiter);
-
 app.use(morgan('dev'));
 
 // ====================== DATABASE ======================
@@ -64,12 +53,11 @@ app.get('/', (req, res) => {
 const errorHandler = require('./middleware/error.middleware');
 app.use(errorHandler);
 
-// Replace the last part (from const PORT = ... to the end)
 const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, () => {
   console.log(`🚀 Server running on port ${PORT}`);
   console.log(`📍 Environment: ${process.env.NODE_ENV}`);
-  console.log(`🌐 Live URL: https://${process.env.RENDER_EXTERNAL_HOSTNAME || 'todo-api-9o2m.onrender.com'}`);
-  console.log(`📚 Swagger Docs: https://${process.env.RENDER_EXTERNAL_HOSTNAME || 'localhost'}:${PORT}/api-docs`);
+  console.log(`🌐 Live URL: https://todo-api-90o2m.onrender.com`);
+  console.log(`📚 Swagger Docs: https://todo-api-90o2m.onrender.com/api-docs`);
 });
