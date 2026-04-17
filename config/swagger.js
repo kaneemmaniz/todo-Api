@@ -17,15 +17,19 @@ const options = {
       {
         url: serverUrl,
         description: process.env.NODE_ENV === 'production' ? 'Production server' : 'Development server',
-      },
+      }
     ],
     components: {
-      securitySchemes: {
-        BearerAuth: {
-          type: 'http',
-          scheme: 'bearer',
-          bearerFormat: 'JWT',
-          description: 'Enter your JWT token (Bearer <token>)'
+      schemas: {
+        Todo: {
+          type: 'object',
+          properties: {
+            _id: { type: 'string', example: '69e129bf4026184c78eb08ad' },
+            title: { type: 'string', example: 'Learn Node.js' },
+            completed: { type: 'boolean', example: false },
+            createdAt: { type: 'string', format: 'date-time' },
+            updatedAt: { type: 'string', format: 'date-time' }
+          }
         }
       }
     }
