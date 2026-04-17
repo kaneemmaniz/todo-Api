@@ -14,9 +14,14 @@ const connectDB = require('./config/db');
 // ====================== MIDDLEWARE ======================
 app.use(helmet());
 
-// Improved CORS Configuration
+// Replace the current cors line with this:
 app.use(cors({
-  origin: true,                    // Allow all origins for now (including Swagger)
+  origin: [
+    'http://localhost:5000',
+    'http://127.0.0.1:5000',
+    'https://todo-api-9o2m.onrender.com',   // Add your Render URL
+    'https://*.onrender.com'                 // Allow all Render subdomains
+  ],
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true
@@ -63,9 +68,12 @@ app.get('/', (req, res) => {
 const errorHandler = require('./middleware/error.middleware');
 app.use(errorHandler);
 
-const PORT = process.env.PORT || 5000;
+// Replace the last part (from const PORT = ... to the end)
+const PORT = process.env.PORT || 5000;   // This line is already good, but make sure it's there
+
 app.listen(PORT, () => {
-  console.log(`🚀 Server running on http://localhost:${PORT}`);
+  console.log(`🚀 Server running on port ${PORT}`);
   console.log(`📍 Environment: ${process.env.NODE_ENV}`);
   console.log(`📚 Swagger Docs: http://localhost:${PORT}/api-docs`);
+  console.log(`🌐 Live URL: https://${process.env.RENDER_EXTERNAL_HOSTNAME || 'todo-api-9o2m.onrender.com'}`);
 });
