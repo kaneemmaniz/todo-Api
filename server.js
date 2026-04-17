@@ -11,34 +11,41 @@ dotenv.config();
 const app = express();
 const connectDB = require('./config/db');
 
-// Security Middleware
-app.use(helmet());                    // Adds security headers
-app.use(cors());
+// ====================== MIDDLEWARE ======================
+app.use(helmet());
+
+// Improved CORS Configuration
+app.use(cors({
+  origin: true,                    // Allow all origins for now (including Swagger)
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: true
+}));
+
 app.use(express.json({ limit: '10kb' }));
 app.use(express.urlencoded({ extended: true, limit: '10kb' }));
 
-// Rate Limiting (prevent abuse)
+// Rate Limiting
 const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100,                 // limit each IP to 100 requests per window
-  message: { success: false, message: 'Too many requests, please try again later.' }
+  windowMs: 15 * 60 * 1000,
+  max: 100,
+  message: { success: false, message: 'Too many requests from this IP, please try again later.' }
 });
 app.use('/api', limiter);
 
-// Logging
 app.use(morgan('dev'));
 
-// Database Connection
+// ====================== DATABASE ======================
 connectDB();
 
-// Routes
+// ====================== ROUTES ======================
 const authRoutes = require('./routes/auth.routes');
 const todoRoutes = require('./routes/todo.routes');
 
 app.use('/api/auth', authRoutes);
 app.use('/api/todos', todoRoutes);
 
-// Swagger Documentation
+// ====================== SWAGGER ======================
 const swaggerUi = require('swagger-ui-express');
 const swaggerSpecs = require('./config/swagger');
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpecs));
@@ -51,7 +58,8 @@ app.get('/', (req, res) => {
   `);
 });
 
-// Global Error Handler - Must be last
+// ====================== ERROR HANDLER ======================
+// Must be last
 const errorHandler = require('./middleware/error.middleware');
 app.use(errorHandler);
 
