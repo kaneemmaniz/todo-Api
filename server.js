@@ -1,5 +1,3 @@
-
-// server.js
 const dotenv = require('dotenv');
 dotenv.config();
 
@@ -16,7 +14,6 @@ const app = express();
 // Connect to MongoDB
 connectDB();
 
-
 // CORS: Allow only specific origins in production
 const allowedOrigins = process.env.NODE_ENV === 'production'
   ? ['https://todo-api-90o2m.onrender.com']
@@ -26,13 +23,15 @@ app.use(cors({ origin: allowedOrigins, credentials: true }));
 app.use(express.json());
 app.use(morgan('dev'));
 
-// Swagger UI (move before routes for reliability)
+// Swagger UI (must be before routes)
 app.use('/api/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
-console.log("=== SERVER STARTING ON RENDER ===");
+// Root route
+app.get('/', (req, res) => {
+  res.send('✅ API is running! Root route works on Render.');
+});
 
-// Load routes with error catching
-console.log("Loading auth routes...");
+// Load routes
 try {
   const authRoutes = require('./routes/auth.routes');
   app.use('/api/auth', authRoutes);
@@ -41,7 +40,6 @@ try {
   console.error("❌ Failed to load auth.routes.js:", err.message);
 }
 
-console.log("Loading todo routes...");
 try {
   const todoRoutes = require('./routes/todo.routes');
   app.use('/api/todos', todoRoutes);
@@ -49,14 +47,6 @@ try {
 } catch (err) {
   console.error("❌ Failed to load todo.routes.js:", err.message);
 }
-
-
-
-// Root route
-app.get('/', (req, res) => {
-  res.send('✅ API is running! Root route works on Render.');
-});
-
 
 // Error handler middleware (should be last)
 app.use(errorHandler);
