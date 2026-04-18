@@ -1,16 +1,15 @@
+
 // server.js
+const dotenv = require('dotenv');
 dotenv.config();
 
 const express = require('express');
-const dotenv = require('dotenv');
 const cors = require('cors');
 const morgan = require('morgan');
 const swaggerUi = require('swagger-ui-express');
 const swaggerSpec = require('./config/swagger');
 const connectDB = require('./config/db');
 const errorHandler = require('./middleware/error.middleware');
-
-dotenv.config();
 
 const app = express();
 
