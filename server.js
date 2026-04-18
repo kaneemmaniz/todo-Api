@@ -1,36 +1,30 @@
-// server.js - Minimal Diagnostic Version
+// server.js - Minimal Test Version
 const express = require('express');
-const dotenv = require('dotenv');
 const cors = require('cors');
-
-dotenv.config();
 
 const app = express();
 
+app.use(cors({ origin: true }));
+app.use(express.json());
+
 console.log("Server starting...");
 
-app.use(cors({ origin: true }));
-
+// Test routes
 app.get('/', (req, res) => {
-  res.send('✅ API is running! Root route works.');
+  res.send('✅ API is running! Root route works on Render.');
 });
 
-app.get('/test', (req, res) => {
-  res.json({ message: 'Test route works' });
+app.post('/api/auth/login', (req, res) => {
+  res.json({ success: true, message: "Login route is working" });
 });
 
-// Simple test route for auth and todos
-app.get('/api/auth/test', (req, res) => {
-  res.json({ message: 'Auth route group works' });
-});
-
-app.get('/api/todos/test', (req, res) => {
-  res.json({ message: 'Todos route group works' });
+app.post('/api/todos', (req, res) => {
+  res.json({ success: true, message: "Todo route is working" });
 });
 
 const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, () => {
   console.log(`🚀 Server running on port ${PORT}`);
-  console.log(`🌐 Live URL: https://todo-api-90o2m.onrender.com`);
+  console.log(`🌐 Live at https://todo-api-90o2m.onrender.com`);
 });
