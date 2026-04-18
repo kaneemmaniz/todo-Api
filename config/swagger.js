@@ -14,10 +14,23 @@ const options = {
         url: 'https://todo-api-9o2m.onrender.com',
         description: 'Production server',
       }
+    ],
+    components: {
+      securitySchemes: {
+        BearerAuth: {
+          type: 'http',
+          scheme: 'bearer',
+          bearerFormat: 'JWT',
+        }
+      }
+    },
+    security: [
+      {
+        BearerAuth: []
+      }
     ]
   },
   apis: ['./routes/*.js'],
 };
-
 const specs = swaggerJsdoc(options);
 module.exports = specs;
