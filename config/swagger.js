@@ -13,10 +13,6 @@ const options = {
       {
         url: 'https://todo-api-90o2m.onrender.com',
         description: 'Production server',
-      },
-      {
-        url: 'http://localhost:5000',
-        description: 'Development server',
       }
     ]
   },
