@@ -16,6 +16,7 @@ const app = express();
 // Connect to MongoDB
 connectDB();
 
+
 // CORS: Allow only specific origins in production
 const allowedOrigins = process.env.NODE_ENV === 'production'
   ? ['https://todo-api-90o2m.onrender.com']
@@ -24,6 +25,9 @@ app.use(cors({ origin: allowedOrigins, credentials: true }));
 
 app.use(express.json());
 app.use(morgan('dev'));
+
+// Swagger UI (move before routes for reliability)
+app.use('/api/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 console.log("=== SERVER STARTING ON RENDER ===");
 
@@ -47,8 +51,6 @@ try {
 }
 
 
-// Swagger UI
-app.use('/api/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 // Root route
 app.get('/', (req, res) => {
