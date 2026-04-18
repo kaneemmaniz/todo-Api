@@ -1,14 +1,28 @@
 // server.js
+dotenv.config();
+
 const express = require('express');
 const dotenv = require('dotenv');
 const cors = require('cors');
 const morgan = require('morgan');
+const swaggerUi = require('swagger-ui-express');
+const swaggerSpec = require('./config/swagger');
+const connectDB = require('./config/db');
+const errorHandler = require('./middleware/error.middleware');
 
 dotenv.config();
 
 const app = express();
 
-app.use(cors({ origin: true }));
+// Connect to MongoDB
+connectDB();
+
+// CORS: Allow only specific origins in production
+const allowedOrigins = process.env.NODE_ENV === 'production'
+  ? ['https://todo-api-90o2m.onrender.com']
+  : ['http://localhost:3000'];
+app.use(cors({ origin: allowedOrigins, credentials: true }));
+
 app.use(express.json());
 app.use(morgan('dev'));
 
@@ -33,13 +47,20 @@ try {
   console.error("❌ Failed to load todo.routes.js:", err.message);
 }
 
+
+// Swagger UI
+app.use('/api/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+
 // Root route
 app.get('/', (req, res) => {
   res.send('✅ API is running! Root route works on Render.');
 });
 
-const PORT = process.env.PORT || 5000;
 
+// Error handler middleware (should be last)
+app.use(errorHandler);
+
+const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
   console.log(`🚀 Server running on port ${PORT}`);
   console.log(`🌐 Live at https://todo-api-90o2m.onrender.com`);

@@ -3,11 +3,10 @@ const Todo = require('../models/todo.model');
 const AppError = require('../utils/AppError');
 const { formatResponse } = require('../utils/responseFormatter');
 
-// Get all todos
+// Get all todos (user-specific)
 const getAllTodos = async (req, res, next) => {
   try {
-    const todos = await Todo.find().sort({ createdAt: -1 });
-
+    const todos = await Todo.find({ user: req.user._id }).sort({ createdAt: -1 });
     res.json({
       success: true,
       results: todos.length,
@@ -18,15 +17,13 @@ const getAllTodos = async (req, res, next) => {
   }
 };
 
-// Get single todo
+// Get single todo (user-specific)
 const getTodoById = async (req, res, next) => {
   try {
-    const todo = await Todo.findById(req.params.id);
-
+    const todo = await Todo.findOne({ _id: req.params.id, user: req.user._id });
     if (!todo) {
       return next(new AppError("Todo not found", 404));
     }
-
     res.json({
       success: true,
       data: formatResponse(todo)
@@ -36,14 +33,14 @@ const getTodoById = async (req, res, next) => {
   }
 };
 
-// Create new todo
+// Create new todo (user-specific)
 const createTodo = async (req, res, next) => {
   try {
     const newTodo = await Todo.create({
       title: req.body.title,
-      completed: false
+      completed: false,
+      user: req.user._id
     });
-
     res.status(201).json({
       success: true,
       data: formatResponse(newTodo)
@@ -53,22 +50,20 @@ const createTodo = async (req, res, next) => {
   }
 };
 
-// Update todo
+// Update todo (user-specific)
 const updateTodo = async (req, res, next) => {
   try {
-    const todo = await Todo.findByIdAndUpdate(
-      req.params.id,
-      { 
+    const todo = await Todo.findOneAndUpdate(
+      { _id: req.params.id, user: req.user._id },
+      {
         title: req.body.title,
-        completed: req.body.completed 
+        completed: req.body.completed
       },
       { new: true, runValidators: true }
     );
-
     if (!todo) {
       return next(new AppError("Todo not found", 404));
     }
-
     res.json({
       success: true,
       data: formatResponse(todo)
@@ -78,15 +73,13 @@ const updateTodo = async (req, res, next) => {
   }
 };
 
-// Delete todo
+// Delete todo (user-specific)
 const deleteTodo = async (req, res, next) => {
   try {
-    const todo = await Todo.findByIdAndDelete(req.params.id);
-
+    const todo = await Todo.findOneAndDelete({ _id: req.params.id, user: req.user._id });
     if (!todo) {
       return next(new AppError("Todo not found", 404));
     }
-
     res.json({
       success: true,
       message: "Todo deleted successfully"

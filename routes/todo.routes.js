@@ -36,6 +36,7 @@ router.use(protect); // Apply protection middleware to all routes
  *                 results: { type: 'number' }
  *                 data: { type: 'array', items: { $ref: '#/components/schemas/Todo' } }
  */
+
 router.get('/', getAllTodos);
 
 /**
@@ -58,6 +59,72 @@ router.get('/', getAllTodos);
  *         description: Todo not found
  */
 router.get('/:id', getTodoById);
+
+/**
+ * @swagger
+ * /api/todos:
+ *   post:
+ *     summary: Create a new todo
+ *     tags: [Todos]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/Todo'
+ *     responses:
+ *       201:
+ *         description: Todo created
+ */
+router.post('/', validate(createTodoSchema), createTodo);
+
+/**
+ * @swagger
+ * /api/todos/{id}:
+ *   put:
+ *     summary: Update a todo
+ *     tags: [Todos]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: MongoDB ObjectId of the todo
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/Todo'
+ *     responses:
+ *       200:
+ *         description: Todo updated
+ *       404:
+ *         description: Todo not found
+ */
+router.put('/:id', validate(updateTodoSchema), updateTodo);
+
+/**
+ * @swagger
+ * /api/todos/{id}:
+ *   delete:
+ *     summary: Delete a todo
+ *     tags: [Todos]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: MongoDB ObjectId of the todo
+ *     responses:
+ *       200:
+ *         description: Todo deleted
+ *       404:
+ *         description: Todo not found
+ */
+router.delete('/:id', deleteTodo);
 
 /**
  * @swagger
