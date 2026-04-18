@@ -16,7 +16,7 @@ connectDB();
 
 // CORS: Allow only specific origins in production
 const allowedOrigins = process.env.NODE_ENV === 'production'
-  ? ['https://todo-api-90o2m.onrender.com']
+  ? ['https://todo-api-9o2m.onrender.com']
   : ['http://localhost:3000'];
 app.use(cors({ origin: allowedOrigins, credentials: true }));
 
@@ -54,5 +54,5 @@ app.use(errorHandler);
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
   console.log(`🚀 Server running on port ${PORT}`);
-  console.log(`🌐 Live at https://todo-api-90o2m.onrender.com`);
+  console.log(`🌐 Live at https://todo-api-9o2m.onrender.com`);
 });
