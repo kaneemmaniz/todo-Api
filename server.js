@@ -1,7 +1,8 @@
-// server.js - Debug Version
+// server.js
 const express = require('express');
 const dotenv = require('dotenv');
 const cors = require('cors');
+const morgan = require('morgan');
 
 dotenv.config();
 
@@ -9,17 +10,12 @@ const app = express();
 
 app.use(cors({ origin: true }));
 app.use(express.json());
+app.use(morgan('dev'));
 
 console.log("=== SERVER STARTING ON RENDER ===");
 
-// Test basic route
-app.get('/', (req, res) => {
-  res.send('✅ API is running! Root route works on Render.');
-});
-
-// ====================== TRY TO LOAD ROUTES ======================
-console.log("Attempting to load auth.routes.js...");
-
+// Load routes with error catching
+console.log("Loading auth routes...");
 try {
   const authRoutes = require('./routes/auth.routes');
   app.use('/api/auth', authRoutes);
@@ -28,8 +24,7 @@ try {
   console.error("❌ Failed to load auth.routes.js:", err.message);
 }
 
-console.log("Attempting to load todo.routes.js...");
-
+console.log("Loading todo routes...");
 try {
   const todoRoutes = require('./routes/todo.routes');
   app.use('/api/todos', todoRoutes);
@@ -37,6 +32,11 @@ try {
 } catch (err) {
   console.error("❌ Failed to load todo.routes.js:", err.message);
 }
+
+// Root route
+app.get('/', (req, res) => {
+  res.send('✅ API is running! Root route works on Render.');
+});
 
 const PORT = process.env.PORT || 5000;
 
